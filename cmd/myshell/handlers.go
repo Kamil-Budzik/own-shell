@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -39,7 +40,6 @@ func registerCommand(command string, handler CommandFunc) {
 	commandHandlers[command] = handler
 }
 
-// Handlers
 func handleExit(args []string) {
 	os.Exit(0)
 }
@@ -54,11 +54,18 @@ func handleType(args []string) {
 		return
 	}
 	cmd := args[0]
-
-	if _, exists := commandHandlers[cmd]; exists {
-		fmt.Println(cmd + " is a shell builtin")
-	} else {
-		fmt.Println(cmd + ": not found")
+	_, builtin := commandHandlers[cmd]
+	if builtin {
+		fmt.Println(cmd, "is a shell builtin")
+		return
 	}
-
+	paths := strings.Split(os.Getenv("PATH"), ":")
+	for _, path := range paths {
+		fp := filepath.Join(path, args[0])
+		if _, err := os.Stat(fp); err == nil {
+			fmt.Println(fp)
+			return
+		}
+	}
+	fmt.Println(cmd + ": not found")
 }
