@@ -69,3 +69,15 @@ func handleType(args []string) {
 	}
 	fmt.Println(cmd + ": not found")
 }
+
+func handlePwd(args []string) {
+	_ = args
+	path, err := os.Getwd()
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println(path)
+}
