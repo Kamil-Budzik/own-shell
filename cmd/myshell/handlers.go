@@ -83,7 +83,20 @@ func handlePwd(args []string) {
 }
 
 func handleCd(args []string) {
-	command := args[0]
+	if len(args) == 0 {
+		return
+	}
+	command := strings.TrimSpace(args[0])
+
+	if command == "~" {
+		homeDir, err := os.UserHomeDir()
+		command = homeDir
+		if err != nil {
+			fmt.Println("Failed to get home directory", err)
+			return
+		}
+	}
+
 	if err := os.Chdir(command); err != nil {
 		fmt.Fprintf(os.Stdout, "%s: No such file or directory\n", command)
 	}
