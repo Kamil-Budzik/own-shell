@@ -5,6 +5,7 @@ func main() {
 	registerCommand("echo", handleEcho)
 	registerCommand("type", handleType)
 	registerCommand("pwd", handlePwd)
+	registerCommand("cd", handleCd)
 
 	for {
 		handleCommand()

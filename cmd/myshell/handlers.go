@@ -81,3 +81,10 @@ func handlePwd(args []string) {
 
 	fmt.Println(path)
 }
+
+func handleCd(args []string) {
+	command := args[0]
+	if err := os.Chdir(command); err != nil {
+		fmt.Fprintf(os.Stdout, "%s: No such file or directory\n", command)
+	}
+}
