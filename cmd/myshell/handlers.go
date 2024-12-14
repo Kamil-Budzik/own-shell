@@ -32,7 +32,7 @@ func handleCommand() {
 	if handler, exists := commandHandlers[cmd]; exists {
 		handler(args)
 	} else {
-		fmt.Println(cmd + ": command not found")
+		executeFile(cmd, args)
 	}
 }
 
