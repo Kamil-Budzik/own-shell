@@ -21,18 +21,30 @@ func parseCommand(input string) []string {
 	var args []string
 	var current strings.Builder
 	inSingleQuote := false
+	inDoubleQuote := false
+	escapeNext := false
 
 	for _, char := range input {
-		switch char {
-		case '\'':
+		switch {
+		case escapeNext:
+			current.WriteRune(char)
+			escapeNext = false
+
+		case char == '\\' && inDoubleQuote:
+			escapeNext = true
+
+		case char == '\'' && !inDoubleQuote:
 			inSingleQuote = !inSingleQuote
-		case ' ':
-			if inSingleQuote {
-				current.WriteRune(char)
-			} else if current.Len() > 0 {
+
+		case char == '"' && !inSingleQuote:
+			inDoubleQuote = !inDoubleQuote
+
+		case char == ' ' && !inSingleQuote && !inDoubleQuote:
+			if current.Len() > 0 {
 				args = append(args, current.String())
 				current.Reset()
 			}
+
 		default:
 			current.WriteRune(char)
 		}
@@ -42,8 +54,8 @@ func parseCommand(input string) []string {
 		args = append(args, current.String())
 	}
 
-	if inSingleQuote {
-		fmt.Fprintln(os.Stderr, "Error: unmatched single quote")
+	if inSingleQuote || inDoubleQuote {
+		fmt.Fprintln(os.Stderr, "Error: unmatched quote")
 		return nil
 	}
 
