@@ -22,7 +22,7 @@ func handleCommand() {
 	}
 	command = strings.TrimSpace(command)
 
-	parts := strings.Fields(command)
+	parts := parseCommand(command)
 	if len(parts) == 0 {
 		return
 	}

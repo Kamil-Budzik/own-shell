@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 func executeFile(cmd string, args []string) {
@@ -14,4 +15,37 @@ func executeFile(cmd string, args []string) {
 	if err != nil {
 		fmt.Printf("%s: command not found\n", cmd)
 	}
+}
+
+func parseCommand(input string) []string {
+	var args []string
+	var current strings.Builder
+	inSingleQuote := false
+
+	for _, char := range input {
+		switch char {
+		case '\'':
+			inSingleQuote = !inSingleQuote
+		case ' ':
+			if inSingleQuote {
+				current.WriteRune(char)
+			} else if current.Len() > 0 {
+				args = append(args, current.String())
+				current.Reset()
+			}
+		default:
+			current.WriteRune(char)
+		}
+	}
+
+	if current.Len() > 0 {
+		args = append(args, current.String())
+	}
+
+	if inSingleQuote {
+		fmt.Fprintln(os.Stderr, "Error: unmatched single quote")
+		return nil
+	}
+
+	return args
 }
